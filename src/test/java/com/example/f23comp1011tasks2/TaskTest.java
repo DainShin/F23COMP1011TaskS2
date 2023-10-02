@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
@@ -14,7 +13,8 @@ class TaskTest {
     @BeforeEach
     void setUp() {
         fred = new User("fred@rocks.com", "Freddie", "7055551234");
-        task = new Task("Do Quiz", "See quiz in week2", LocalDate.of(20234,9,23),15, fred);
+        task = new Task("Do Quiz", "See quiz in week2",
+                LocalDate.of(20234,9,23),15, fred);
 
     }
     @Test

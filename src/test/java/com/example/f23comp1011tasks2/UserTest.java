@@ -52,7 +52,7 @@ class UserTest {
         });
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            newUser.setUserName("     ");
+            newUser.setUserName("  Fred Flinstone ");
         });
     }
 
