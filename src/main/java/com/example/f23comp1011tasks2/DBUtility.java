@@ -1,6 +1,7 @@
 package com.example.f23comp1011tasks2;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class DBUtility {
@@ -57,7 +58,7 @@ public class DBUtility {
 
         // use a try with resources block to access the database and automatically close the connection, statement
         // adn result set
-        String sql = "SELECT * FROM users ORDER BU userName ASC";
+        String sql = "SELECT * FROM users";
 
         try (
                 Connection conn = DriverManager.getConnection(connectURL, dbUser, password);
@@ -69,7 +70,7 @@ public class DBUtility {
             while (resultSet.next())
             {
                 User newUser = new User(resultSet.getString("email"),
-                                        resultSet.getString("userName"),
+                                        resultSet.getString("fullName"),
                                         resultSet.getString("phone"));
                 users.add(newUser);
             }
@@ -123,4 +124,55 @@ public class DBUtility {
         }
         return rspMessage;
     }
+
+    private static User getUsersFromEmail(String email, ArrayList<User> users)
+    {
+        for(User user : users)
+        {
+            if(user.getEmail().equalsIgnoreCase(email))
+                return user;
+        }
+        return null;
+    }
+
+    public static ArrayList<Task> getTasksFromDB() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<User> users = DBUtility.getUsersFromDB();
+
+        // use a try with resources block to access the database and automatically close the connection, statement
+        // adn result set
+        String sql = "SELECT * FROM tasks";
+
+        try (
+                Connection conn = DriverManager.getConnection(connectURL, dbUser, password);
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);
+        )
+        {
+            // loop over the results returned and create new user objects
+            while (resultSet.next())
+            {
+               int taskID = resultSet.getInt("taskId");
+               String title = resultSet.getString("title");
+               String description = resultSet.getString("description");
+               LocalDate dueDate = resultSet.getDate("dueDate").toLocalDate();
+               LocalDate creationDate = resultSet.getDate("creationDate").toLocalDate();
+               int estimatedLengthInMin = resultSet.getInt("estimatedLengthInMinutes");
+               String email = resultSet.getString("email");
+               User user = getUsersFromEmail(email, users);
+               Status status = Status.valueOf(resultSet.getString("status"));
+
+               Task newTask = new Task(taskID, title, description, dueDate, creationDate, estimatedLengthInMin, user, status);
+
+               tasks.add(newTask);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
+    }
+
+
 }
